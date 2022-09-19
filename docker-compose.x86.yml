@@ -1,6 +1,5 @@
 version: '3.9'
 services:
-
   minio:
     hostname: minio
     image: 'minio/minio'
@@ -21,6 +20,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
 
   mc:
     image: minio/mc
@@ -42,6 +44,9 @@ services:
     depends_on:
       minio:
         condition: service_healthy  
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
 
   postgres:
     image: postgres
@@ -63,7 +68,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
+
   aio:
     build: aio/
     container_name: aio
@@ -102,6 +110,9 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
   
   trino:
     build: trino/
@@ -124,6 +135,9 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
 
   mariadb:
     image: 'mariadb'
@@ -141,6 +155,9 @@ services:
       - MYSQL_DATABASE=metastore_db
     networks:
       - ndsnet
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
 
   broker:
     container_name: broker
@@ -161,6 +178,9 @@ services:
       - 9092:9092
     networks:
       - ndsnet
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
   
   datahub-actions:
     depends_on:
@@ -184,6 +204,9 @@ services:
     restart: on-failure:5
     networks:
       - ndsnet
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
 
   datahub-frontend-react:
     container_name: datahub-frontend-react
@@ -208,6 +231,9 @@ services:
       - ndsnet
     volumes:
       - ${HOME}/.datahub/plugins:/etc/datahub/plugins
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
 
   datahub-gms:
     container_name: datahub-gms
@@ -240,6 +266,9 @@ services:
       - ${HOME}/.datahub/plugins:/etc/datahub/plugins
     networks:
       - ndsnet
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
 
   elasticsearch:
     container_name: elasticsearch
@@ -262,6 +291,9 @@ services:
       - ./data/elasticsearch:/usr/share/elasticsearch/data
     networks:
       - ndsnet
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
   
   elasticsearch-setup:
     container_name: elasticsearch-setup
@@ -275,6 +307,9 @@ services:
     image: linkedin/datahub-elasticsearch-setup:${DATAHUB_VERSION:-head}
     networks:
       - ndsnet
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
 
   kafka-setup:
     container_name: kafka-setup
@@ -288,6 +323,9 @@ services:
     image: linkedin/datahub-kafka-setup:${DATAHUB_VERSION:-head}
     networks:
       - ndsnet
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
   
   mysql-setup:
     container_name: mysql-setup
@@ -303,6 +341,9 @@ services:
     image: acryldata/datahub-mysql-setup:${DATAHUB_VERSION:-head}
     networks:
       - ndsnet
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
   
   schema-registry:
     container_name: schema-registry
@@ -318,6 +359,9 @@ services:
       - 8081:8081
     networks:
       - ndsnet
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
   
   zookeeper:
     container_name: zookeeper
@@ -332,6 +376,9 @@ services:
       - ./data/zookeeper:/var/opt/zookeeper
     networks:
       - ndsnet
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
 
   cube:
     image: cubejs/cube
@@ -347,6 +394,9 @@ services:
       - ndsnet
     depends_on:
       - aio
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
 
   metabase:
     container_name: metabase
@@ -360,6 +410,9 @@ services:
       - 3030:3030
     networks:
       - ndsnet
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
   
 networks:
   ndsnet:

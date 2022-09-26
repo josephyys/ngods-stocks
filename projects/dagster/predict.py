@@ -27,13 +27,24 @@ def predict_op(context, dependent_job=None):
         arima_model = auto_arima(train_data["price_close"], start_p=1, start_d=1, start_q=0, max_p=5, max_d=5, max_q=5, start_P=0, start_D=1, start_Q=0, max_P=5, max_D=5, max_Q=5, m=11, seasonal=True, random_state=20, supress_warning=True, stepwise=True)
         # arima_model.summary()
 
+        # test_data.set_index('dt', inplace=True)
+
         #  RangeIndex(start=600, stop=629, step=1)
-        # context.log.info(f"index: {test_data.index}")
+        # {type(test_data.iloc[0]["dt"])}  
+        # context.log.info(f"index: {test_data.index} symbol: {symbol} ")
         predicted_data = pd.DataFrame(arima_model.predict(n_periods=n_periods), index=test_data.index)
-        # predicted_data = pd.DataFrame(arima_model.predict(n_periods=n_periods), index=test_data['dt'])
+        # predicted_data = pd.DataFrame(arima_model.predict(n_periods=n_periods), index=test_data['dt'][:])
+        
         # context.log.info(f"result_data: {predicted_data}")
+        
+        i=0
         for row in predicted_data.itertuples():
-            result_data.append([symbol, row[0], decimal.Decimal(row[1])])
+            d = test_data.iloc[i]["dt"]
+            # context.log.info(f"row {d}")
+            # row[0]
+            result_data.append([symbol, d, decimal.Decimal(row[1])])
+            i+=1
+
     # context.log.info(f"result_data: {result_data}")
 
     schema = StructType([
@@ -41,7 +52,9 @@ def predict_op(context, dependent_job=None):
         StructField('dt', DateType(), True),
         StructField('price_predicted', DecimalType(32,16), True),
     ])
+    # context.log.info(f"schema: {schema}")
     r = spark.createDataFrame(result_data, schema)
+    # context.log.info(f"createDataFrame: {r}")
     r.writeTo("warehouse.silver.predicted_data").using("iceberg").tableProperty("write.format.default", "parquet").createOrReplace()
     
 

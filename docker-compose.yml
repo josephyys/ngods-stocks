@@ -5,6 +5,7 @@ services:
     hostname: minio
     image: 'minio/minio'
     container_name: minio
+    restart: always
     ports:
       - '9000:9000'
       - '9001:9001'
@@ -25,6 +26,7 @@ services:
   mc:
     image: minio/mc
     container_name: mc
+    restart: always
     hostname: mc
     environment:
       - AWS_ACCESS_KEY_ID=minio
@@ -45,6 +47,7 @@ services:
 
   postgres:
     image: postgres
+    restart: always
     hostname: postgres
     container_name: postgres
     environment:
@@ -66,6 +69,7 @@ services:
   
   aio:
     build: aio/
+    restart: always
     container_name: aio
     environment:
       - AWS_ACCESS_KEY_ID=minio
@@ -106,6 +110,7 @@ services:
   trino:
     build: trino/
     container_name: trino
+    restart: always
     volumes:
       - ./data/stage:/var/lib/ngods/stage
       - ./certs/trino.pass:/trino.pass
@@ -127,6 +132,7 @@ services:
 
   cube:
     image: cubejs/cube
+    restart: always
     container_name: cube
     hostname: cube
     volumes:
@@ -142,6 +148,7 @@ services:
 
   metabase:
     container_name: metabase
+    restart: always
     depends_on:
       - cube
     hostname: metabase
